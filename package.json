@@ -1,0 +1,13 @@
+{
+  "name": "buildnorderpizza-backend",
+  "version": "1.0.0",
+  "description": "The backend repo for the fullstack CRUD app, to build your custom pizza and place the order.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
