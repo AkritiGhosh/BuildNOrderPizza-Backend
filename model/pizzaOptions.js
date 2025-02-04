@@ -1,3 +1,5 @@
+import { model, Schema } from "mongoose";
+
 const PizzaOptionsSchema = new Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true },
