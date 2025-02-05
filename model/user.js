@@ -10,10 +10,13 @@ const addressSchema = mongoose.Schema({
 
 const userProfileSchema = mongoose.Schema(
   {
+    account: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Account",
+      required: true,
+    },
     name: { type: String, required: true },
-    phone: { type: String, required: false },
-    email: { type: String, required: false, unique: true },
-    password: { type: String, required: false },
+   
     address: [addressSchema],
     orderHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
   },
