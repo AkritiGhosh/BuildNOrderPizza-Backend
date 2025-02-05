@@ -3,6 +3,12 @@ import { ORDER_DELIVERY_STATUS } from "../lib/constants";
 
 const { Schema, model } = mongoose;
 
+const PizzaItem = new Schema({
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Pizza",
+  required: true,
+});
+
 const OrderSchema = new Schema(
   {
     userId: {
