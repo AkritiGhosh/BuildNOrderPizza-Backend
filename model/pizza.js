@@ -1,8 +1,15 @@
 import { PIZZA_SIZE } from "../lib/constants";
 
+const PizzaToppingsSchema = new Schema({
+  id: { type: mongoose.Schema.Types.ObjectId, ref: "PizzaOptions" },
+  quantity: { type: Number, default: 1 },
+});
+
 const PizzaSchema = new Schema({
   name: String,
-  options: [{ type: mongoose.Schema.Types.ObjectId, ref: "PizzaOptions" }],
+  size: { type: mongoose.Schema.Types.ObjectId, ref: "PizzaOptions" },
+  base: { type: mongoose.Schema.Types.ObjectId, ref: "PizzaOptions" },
+  toppings: [PizzaToppingsSchema],
   basePrice: { type: Number, required: true },
 });
 
