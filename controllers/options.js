@@ -3,6 +3,7 @@ import PizzaOptions from "../model/pizzaOptions.js";
 const restructurePizzaOptionJSON = (array) => {
   return array.map((ele) => {
     return {
+      _id: ele?._id,
       name: ele?.name,
       price: ele?.price,
       isAvailable: ele?.isAvailable,
