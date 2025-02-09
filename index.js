@@ -2,14 +2,15 @@ import dotenv from "dotenv";
 import express from "express";
 import { initDB } from "./lib/dbConfig.js";
 import optionRouter from "./routes/options.js";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 
-app.use(express.json());  // ✅ Fix: Parse JSON request bodies
+app.use(express.json()); // ✅ Fix: Parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // Optional for form data
-
+app.use(cors());
 initDB();
 
 app.get("/", (request, response) => {
