@@ -17,7 +17,6 @@ const OrderSchema = new Schema(
       required: true,
     },
     items: [PizzaItem],
-    baseAmount: { type: Number, required: true },
     totalAmount: { type: Number, required: true },
     // discountsAvailable:[String],
     // discountApplied: [String],
