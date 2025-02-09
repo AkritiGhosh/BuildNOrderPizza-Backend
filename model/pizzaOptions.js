@@ -6,6 +6,8 @@ const PizzaOptionsSchema = new Schema(
     price: { type: Number, required: true },
     isAvailable: { type: Boolean, default: true },
     category: { type: String, required: true },
+    description: String,
+    imgSrc: String,
   },
   { timestamps: false }
 );

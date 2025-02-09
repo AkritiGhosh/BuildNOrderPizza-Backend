@@ -1,5 +1,17 @@
 import PizzaOptions from "../model/pizzaOptions.js";
 
+const restructurePizzaCrustJSON = (array) => {
+  return array.map((ele) => {
+    return {
+      _id: ele?._id,
+      name: ele?.name,
+      price: ele?.price,
+      isAvailable: ele?.isAvailable,
+      description: ele?.description,
+    };
+  });
+};
+
 const restructurePizzaOptionJSON = (array) => {
   return array.map((ele) => {
     return {
@@ -7,6 +19,7 @@ const restructurePizzaOptionJSON = (array) => {
       name: ele?.name,
       price: ele?.price,
       isAvailable: ele?.isAvailable,
+      imgSrc: ele?.imgSrc,
     };
   });
 };
@@ -23,14 +36,29 @@ export const getAllPizzaOptions = async (req, res) => {
     const categories = [...new Set(pizzaOptions.map((opt) => opt.category))];
 
     // Categorize options
-    const categorizedOptions = categories.map((category) => ({
-      category: category,
-      data: restructurePizzaOptionJSON(
-        pizzaOptions.filter((opt) => opt.category === category)
-      ),
-    }));
+    const toppings = categories.map((category) =>
+      category != "Crust" && category != "Size"
+        ? {
+            category: category,
+            data: restructurePizzaOptionJSON(
+              pizzaOptions.filter((opt) => opt.category === category)
+            ),
+          }
+        : null
+    );
 
-    return res.status(200).json({ data: categorizedOptions });
+    return res.status(200).json({
+      data: {
+        size: restructurePizzaCrustJSON(
+          pizzaOptions.filter((opt) => opt.category == "Size")
+        ),
+        crust: restructurePizzaCrustJSON(
+          pizzaOptions.filter((opt) => opt.category == "Crust")
+        ),
+        toppings: toppings.filter((topping) => topping != null),
+      },
+    });
+    
   } catch (error) {
     console.error(error);
     return res
