@@ -30,9 +30,8 @@ export const getAllPizzaOptions = async (req, res, next) => {
   try {
     const pizzaOptions = await PizzaOptions.find();
 
-    if (!pizzaOptions || pizzaOptions.length === 0) {
-      return res.status(300).json({ msg: "No data added yet" });
-    }
+    if (pizzaOptions || pizzaOptions.length > 0)
+      throwNewError("There are no pizza options in the database", 404);
 
     // Extract unique categories
     const categories = [...new Set(pizzaOptions.map((opt) => opt.category))];
@@ -76,10 +75,7 @@ export const getAllPizzaOptions = async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ message: "Error fetching the pizza options", error });
+    next(error);
   }
 };
 

@@ -4,6 +4,7 @@ import cors from "cors";
 import { PORT } from "./config/env.js";
 import initialDatabase from "./config/db.js";
 import cookieParser from "cookie-parser";
+import { errorHandler } from "./middleware/errorHandler.middleware.js";
 
 const app = express();
 
@@ -17,6 +18,8 @@ app.get("/", (_, response) => {
 });
 
 app.use("/options", optionRouter);
+
+app.use(errorHandler);
 
 app.listen(PORT, async () => {
   await initialDatabase();
