@@ -16,7 +16,8 @@ const userProfileSchema = mongoose.Schema(
       required: true,
     },
     name: { type: String, required: true },
-   
+    gender: { type: String, enum: ["Male", "Female"] },
+    birthDate: Date,
     address: [addressSchema],
     orderHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
   },
@@ -25,4 +26,5 @@ const userProfileSchema = mongoose.Schema(
   }
 );
 
-const userProfileModel = mongoose.model("User", userProfileSchema);
+const UserProfile = mongoose.model("User", userProfileSchema);
+export default UserProfile;
