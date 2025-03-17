@@ -1,6 +1,6 @@
 import { PIZZA_OPTION_CATEGORIES } from "../lib/constants.js";
 import { throwNewError } from "../lib/core.js";
-import PizzaOptions from "../model/pizzaOptions.js";
+import PizzaOptions from "../model/options.model.js";
 
 const restructurePizzaBaseJSON = (array) => {
   return array.map((ele) => {
