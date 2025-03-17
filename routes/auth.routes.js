@@ -14,3 +14,5 @@ authRouter.post('/login')
 
 // Register/Login using Google SSO
 
+
+export default authRouter;
