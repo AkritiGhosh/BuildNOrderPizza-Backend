@@ -1,11 +1,12 @@
 import express from "express";
-import optionRouter from "./routes/options.routes.js";
 import cors from "cors";
 import { PORT } from "./config/env.js";
 import initialDatabase from "./config/db.js";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware/errorHandler.middleware.js";
 import authRouter from "./routes/auth.routes.js";
+import profileRouter from "./routes/userProfile.routes.js";
+import optionRouter from "./routes/options.routes.js";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.get("/", (_, response) => {
 });
 
 app.use("/", authRouter);
+app.use("/user", profileRouter)
 app.use("/options", optionRouter);
 
 app.use(errorHandler);
