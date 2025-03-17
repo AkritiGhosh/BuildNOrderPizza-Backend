@@ -1,5 +1,5 @@
 import express from "express";
-import { authenticatedUse } from "../middleware/auth.middleware";
+import { authenticatedUse } from "../middleware/auth.middleware.js";
 import * as profileController from "../controllers/userProfile.controller.js";
 
 const profileRouter = express.Router();
@@ -36,3 +36,5 @@ profileRouter.delete(
   authenticatedUse,
   profileController.deleteAddress
 );
+
+export default profileRouter;
