@@ -1,14 +1,12 @@
 import express from "express";
 
-const router = express.Router();
+const authRouter = express.Router();
 
 // Register as new user using email and password
-
-// Register as new user using phone and OTP
+authRouter.post('/register')
 
 // Login existing user using email and password
-
-// Login existing user using phone and OTP
+authRouter.post('/login')
 
 // Change password
 
