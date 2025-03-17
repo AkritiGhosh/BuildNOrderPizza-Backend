@@ -9,6 +9,10 @@ optionRouter.get("/:category", optionController?.getOptionsByCategory);
 
 optionRouter.post("/add", optionController?.addNewOption);
 
+optionRouter.put("/edit/:id", optionController?.editOption);
+
 optionRouter.post("/addMultiple", optionController?.addMultipleOptions);
+
+optionRouter.put("/editMultiple", optionController?.editMultipleOptions);
 
 export default optionRouter;

@@ -30,11 +30,16 @@ export const getAllPizzaOptions = async (req, res, next) => {
   try {
     const pizzaOptions = await PizzaOptions.find();
 
-    if (pizzaOptions || pizzaOptions.length > 0)
+    // If no options in DB
+    if (!pizzaOptions || pizzaOptions.length === 0)
       throwNewError("There are no pizza options in the database", 404);
 
     // Extract unique categories
     const categories = [...new Set(pizzaOptions.map((opt) => opt.category))];
+
+    // If there are no categories
+    if (!categories || categories?.length === 0)
+      throwNewError("No categories added for pizza options", 500);
 
     // Categorize options
     const toppings = categories.map((category) =>
@@ -48,8 +53,9 @@ export const getAllPizzaOptions = async (req, res, next) => {
           }
         : null
     );
-
-    return res.status(200).json({
+    res.status(200).json({
+      success: true,
+      message: "Data fetched successfully",
       data: {
         size: restructurePizzaBaseJSON(
           pizzaOptions.filter(
@@ -74,6 +80,7 @@ export const getAllPizzaOptions = async (req, res, next) => {
         ),
       },
     });
+    next();
   } catch (error) {
     next(error);
   }
@@ -82,53 +89,71 @@ export const getAllPizzaOptions = async (req, res, next) => {
 export const getOptionsByCategory = async (req, res, next) => {
   try {
     const category = req?.params?.category;
+    if (!Object.values(PIZZA_OPTION_CATEGORIES).includes(category))
+      throwNewError("There is no such category", 400);
+
     const pizzaOptions = await PizzaOptions.find({ category: category });
 
-    if (!pizzaOptions || pizzaOptions.length === 0) {
-      return res.status(300).json({ msg: "No data added yet" });
-    }
+    if (!pizzaOptions || pizzaOptions.length === 0)
+      throwNewError("There are no pizza option of this category", 404);
 
-    // Categorize options
-    const categorizedOptions = {
-      category: category,
+    res.status(200).json({
+      success: true,
+      message: "Data fetched successfully",
       data: restructurePizzaOptionJSON(pizzaOptions),
-    };
-
-    return res.status(200).json({ data: categorizedOptions });
+    });
+    next();
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error fetching the pizza options", error });
+    next(error);
   }
 };
 
 export const addNewOption = async (req, res, next) => {
   try {
-    const { name, price, isAvailable } = req.body;
-    const pizzaOptions = new PizzaOptions({
-      name,
-      price,
-      isAvailable,
-      category,
-    });
+    const { name, price, isAvailable, category, imgSrc, description } =
+      req.body;
+    if (!name || !price || !category)
+      throwNewError("Not enough data to add a new option", 400);
+
+    let newObj = { name, price, isAvailable, category };
+    if (imgSrc) newObj.imgSrc = imgSrc;
+    if (description) newObj.description = description;
+
+    const pizzaOptions = new PizzaOptions(newObj);
     await pizzaOptions.save();
-    res.status(201).json(pizzaOptions);
+    res.status(201).json({
+      success: true,
+      message: "Option added successfully",
+      data: pizzaOptions,
+    });
+    next();
   } catch (error) {
-    res.status(500).json({ message: "Error adding this pizza option", error });
+    next(error);
   }
 };
 
 export const editOption = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const updatedData = req.body;
     const pizzaOption = await PizzaOptions.findById(id);
-    if (!pizzaOption) throwNewError("No option found | Invalid ID", 404);
-    let newObject = { ...pizzaOption, ...updatedData };
 
-    res.status(201).json(pizzaOption);
+    if (!pizzaOption) throwNewError("No option found | Invalid ID", 404);
+
+    const updatedData = await PizzaOptions.findByIdAndUpdate(
+      id,
+      { $set: req.body },
+      { new: true, runValidators: true }
+    );
+    if (!updatedData) throwNewError("Unable to update value", 400);
+
+    res.status(200).json({
+      success: true,
+      message: "Options updated successfully!",
+      data: updatedData,
+    });
+    next();
   } catch (error) {
-    res.status(500).json({ message: "Error adding this pizza option", error });
+    next(error);
   }
 };
 
@@ -137,18 +162,46 @@ export const addMultipleOptions = async (req, res, next) => {
     const options = req?.body?.options; // Expecting an array of options
 
     if (!Array.isArray(options) || options?.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Invalid input: Expecting an array of options" });
+      throwNewError("Invalid input: Expecting an array of options", 400);
     }
 
     const insertedoptions = await PizzaOptions.insertMany(options);
-    res
-      .status(201)
-      .json({ message: "options added successfully!", data: insertedoptions });
+    res.status(201).json({
+      success: true,
+      message: "Options added successfully!",
+      data: insertedoptions,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error adding options", error: error.message });
+    next(error);
+  }
+};
+
+export const editMultipleOptions = async (req, res, next) => {
+  try {
+    const options = req?.body; // Expecting an array of options
+
+    if (!Array.isArray(options) || options?.length === 0)
+      throwNewError("Invalid input: Expecting an array of options", 400);
+
+    options.forEach(async (element) => {
+      if (!element.id) throwNewError("Invalid data" + element.id, 400);
+      const pizzaOption = await PizzaOptions.findById(element.id);
+
+      if (!pizzaOption) throwNewError("No option found | Invalid ID", 404);
+
+      const updatedData = await PizzaOptions.findByIdAndUpdate(
+        element.id,
+        { $set: element.data },
+        { new: true, runValidators: true }
+      );
+      if (!updatedData) throwNewError("Unable to update value", 400);
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Options added successfully!",
+    });
+  } catch (error) {
+    next(error);
   }
 };
