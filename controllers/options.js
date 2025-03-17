@@ -1,6 +1,8 @@
+import { PIZZA_OPTION_CATEGORIES } from "../lib/constants.js";
+import { throwNewError } from "../lib/core.js";
 import PizzaOptions from "../model/pizzaOptions.js";
 
-const restructurePizzaCrustJSON = (array) => {
+const restructurePizzaBaseJSON = (array) => {
   return array.map((ele) => {
     return {
       _id: ele?._id,
@@ -24,7 +26,7 @@ const restructurePizzaOptionJSON = (array) => {
   });
 };
 
-export const getAllPizzaOptions = async (req, res) => {
+export const getAllPizzaOptions = async (req, res, next) => {
   try {
     const pizzaOptions = await PizzaOptions.find();
 
@@ -37,7 +39,8 @@ export const getAllPizzaOptions = async (req, res) => {
 
     // Categorize options
     const toppings = categories.map((category) =>
-      category != "Crust" && category != "Size"
+      category == PIZZA_OPTION_CATEGORIES.VEG ||
+      category == PIZZA_OPTION_CATEGORIES.NONVEG
         ? {
             category: category,
             data: restructurePizzaOptionJSON(
@@ -49,16 +52,29 @@ export const getAllPizzaOptions = async (req, res) => {
 
     return res.status(200).json({
       data: {
-        size: restructurePizzaCrustJSON(
-          pizzaOptions.filter((opt) => opt.category == "Size")
+        size: restructurePizzaBaseJSON(
+          pizzaOptions.filter(
+            (opt) => opt.category == PIZZA_OPTION_CATEGORIES.SIZE
+          )
         ),
-        crust: restructurePizzaCrustJSON(
-          pizzaOptions.filter((opt) => opt.category == "Crust")
+        crust: restructurePizzaBaseJSON(
+          pizzaOptions.filter(
+            (opt) => opt.category == PIZZA_OPTION_CATEGORIES.CRUST
+          )
+        ),
+        sauce: restructurePizzaOptionJSON(
+          pizzaOptions.filter(
+            (opt) => opt.category == PIZZA_OPTION_CATEGORIES.SAUCE
+          )
         ),
         toppings: toppings.filter((topping) => topping != null),
+        cheese: restructurePizzaOptionJSON(
+          pizzaOptions.filter(
+            (opt) => opt.category == PIZZA_OPTION_CATEGORIES.CHEESE
+          )
+        ),
       },
     });
-    
   } catch (error) {
     console.error(error);
     return res
@@ -67,7 +83,7 @@ export const getAllPizzaOptions = async (req, res) => {
   }
 };
 
-export const getOptionsByCategory = async (req, res) => {
+export const getOptionsByCategory = async (req, res, next) => {
   try {
     const category = req?.params?.category;
     const pizzaOptions = await PizzaOptions.find({ category: category });
@@ -90,7 +106,7 @@ export const getOptionsByCategory = async (req, res) => {
   }
 };
 
-export const addNewOption = async (req, res) => {
+export const addNewOption = async (req, res, next) => {
   try {
     const { name, price, isAvailable } = req.body;
     const pizzaOptions = new PizzaOptions({
@@ -106,7 +122,21 @@ export const addNewOption = async (req, res) => {
   }
 };
 
-export const addMultipleOptions = async (req, res) => {
+export const editOption = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const updatedData = req.body;
+    const pizzaOption = await PizzaOptions.findById(id);
+    if (!pizzaOption) throwNewError("No option found | Invalid ID", 404);
+    let newObject = { ...pizzaOption, ...updatedData };
+
+    res.status(201).json(pizzaOption);
+  } catch (error) {
+    res.status(500).json({ message: "Error adding this pizza option", error });
+  }
+};
+
+export const addMultipleOptions = async (req, res, next) => {
   try {
     const options = req?.body?.options; // Expecting an array of options
 
