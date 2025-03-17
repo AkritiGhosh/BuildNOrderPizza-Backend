@@ -25,14 +25,14 @@ profileRouter.put(
 
 // Edit existing address
 profileRouter.put(
-  "/:id/address/:id",
+  "/:id/address/:addressId",
   authenticatedUse,
   profileController.editAddress
 );
 
 // Delete address
 profileRouter.delete(
-  "/:id/address/:id",
+  "/:id/address/:addressId",
   authenticatedUse,
   profileController.deleteAddress
 );
