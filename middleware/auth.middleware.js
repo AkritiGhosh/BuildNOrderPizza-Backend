@@ -1,22 +1,21 @@
-import { JWT_SECRET } from "../config/env";
-import { throwNewError } from "../lib/core";
 import jwt from "jsonwebtoken";
-import UserAccount from "../model/user.account.model";
+import { JWT_SECRET } from "../config/env.js";
+import { throwNewError } from "../lib/core.js";
+import UserAccount from "../model/user.account.model.js";
 
 export const authenticatedUse = async (req, res, next) => {
   try {
     let token;
-
     if (
-      req.headers.authentication ||
-      req.headers.authentication.startsWith("Bearer")
+      req.headers.authorization ||
+      req.headers.authorization.startsWith("Bearer")
     )
-      token = req.headers.authentication.split(" ")[1];
+      token = req.headers.authorization.split(" ")[1];
     else throwNewError("Unauthorised request", 401);
 
     const decoded = jwt.verify(token, JWT_SECRET);
 
-    const user = await UserAccount.findById(decoded.userId);
+    const user = await UserAccount.findById(decoded._id);
 
     if (!user)
       return res
@@ -25,9 +24,12 @@ export const authenticatedUse = async (req, res, next) => {
 
     req.user = user;
     next();
+    
   } catch (error) {
-    res
-      .status(400)
-      .json({ success: false, message: "Unauthorized access", data: error });
+    res.status(400).json({
+      success: false,
+      message: "Unauthorized access to the request",
+      data: error,
+    });
   }
 };
