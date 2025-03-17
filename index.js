@@ -1,17 +1,14 @@
-import dotenv from "dotenv";
 import express from "express";
-import { initDB } from "./lib/dbConfig.js";
 import optionRouter from "./routes/options.js";
 import cors from "cors";
-
-dotenv.config();
+import { PORT } from "./config/env.js";
+import initialDatabase from "./config/db.js";
 
 const app = express();
 
-app.use(express.json()); // ✅ Fix: Parse JSON request bodies
-app.use(express.urlencoded({ extended: true })); // Optional for form data
+app.use(express.json()); // Parse JSON request bodies
+app.use(express.urlencoded({ extended: true })); // For form data
 app.use(cors());
-initDB();
 
 app.get("/", (request, response) => {
   console.log(request);
@@ -20,6 +17,7 @@ app.get("/", (request, response) => {
 
 app.use("/options", optionRouter);
 
-app.listen(process.env.PORT, () => {
-  console.log("app is running ", process.env.PORT);
+app.listen(PORT, () => {
+  initialDatabase();
+  console.log("app is running ", PORT);
 });

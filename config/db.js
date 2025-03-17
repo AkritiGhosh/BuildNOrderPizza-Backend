@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { DB_URL } from "./env";
+import { DB_URL } from "./env.js";
 
 if (!DB_URL) {
   throw new Error(
@@ -7,7 +7,7 @@ if (!DB_URL) {
   );
 }
 
-export const initialDatabase = async () => {
+const initialDatabase = async () => {
   try {
     await mongoose.connect(DB_URL);
     console.log("Connected to database successfully !!!");
@@ -16,3 +16,5 @@ export const initialDatabase = async () => {
     process.exit(1);
   }
 };
+
+export default initialDatabase;
