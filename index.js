@@ -10,14 +10,13 @@ app.use(express.json()); // Parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // For form data
 app.use(cors());
 
-app.get("/", (request, response) => {
-  console.log(request);
-  return response.status(200).send("YOLO");
+app.get("/", (_, response) => {
+  return response.status(200).send("AApp is ready for client requests");
 });
 
 app.use("/options", optionRouter);
 
-app.listen(PORT, () => {
-  initialDatabase();
-  console.log("app is running ", PORT);
+app.listen(PORT, async () => {
+  await initialDatabase();
+  console.log("App is running on port -", PORT);
 });
