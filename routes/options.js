@@ -1,5 +1,5 @@
 import express from "express";
-import * as optionController from "../controllers/options.js";
+import * as optionController from "../controllers/options.controller.js";
 
 const optionRouter = express.Router();
 
