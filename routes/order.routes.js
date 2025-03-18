@@ -1,5 +1,5 @@
 import express from "express";
-import * as orderController from "../controllers/order.js";
+import * as orderController from "../controllers/order.controller.js";
 const orderRouter = express.Router();
 
 // Get all orders of a user
