@@ -6,13 +6,19 @@ const orderRouter = express.Router();
 orderRouter.get("/", orderController.getAllOrders);
 
 // Get orders of a user from a particular duration
-orderRouter.get("/:duration", orderController.getOrderByDuration);
+orderRouter.get("/duration/:duration", orderController.getOrderByDuration);
+
+// Get orders of a user from a particular status
+orderRouter.get("/status/:status", orderController.getOrderByStatus);
 
 // Get order summary
-orderRouter.get("/details/:id", orderController.getOrderDetails);
+orderRouter.get("/details/:orderId", orderController.getOrderDetails);
 
 // Place new order for a user
-orderRouter.post("/new", orderController.postNewOrder);
+orderRouter.post("/save-cart", orderController.saveCartData);
+
+// Place new order for a user
+orderRouter.post("/new", orderController.createOrder);
 
 // Update order status for a particular order
 orderRouter.patch("/update-status", orderController.updateStatus);
