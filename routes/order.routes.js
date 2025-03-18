@@ -19,3 +19,5 @@ orderRouter.patch("/update-status", orderController.updateStatus);
 
 // Cancel order
 orderRouter.patch("/cancel", orderController.cancelOrder);
+
+export default orderRouter
