@@ -3,10 +3,18 @@ import { ORDER_DELIVERY_STATUS } from "../lib/constants";
 
 const { Schema, model } = mongoose;
 
-const PizzaItem = new Schema({
-  type: mongoose.Schema.Types.ObjectId,
-  ref: "Pizza",
-  required: true,
+const PizzaToppingsSchema = new Schema({
+  id: { type: mongoose.Schema.Types.ObjectId, ref: "PizzaOptions" },
+  quantity: { type: Number, default: 1 },
+});
+
+const PizzaSchema = new Schema({
+  name: String,
+  size: { type: mongoose.Schema.Types.ObjectId, ref: "PizzaOptions" },
+  base: { type: mongoose.Schema.Types.ObjectId, ref: "PizzaOptions" },
+  sauce:{ type: mongoose.Schema.Types.ObjectId, ref: "PizzaOptions" },
+  toppings: [PizzaToppingsSchema],
+  basePrice: { type: Number, required: true },
 });
 
 const OrderSchema = new Schema(
@@ -16,7 +24,7 @@ const OrderSchema = new Schema(
       ref: "User",
       required: true,
     },
-    items: [PizzaItem],
+    items: [PizzaSchema],
     totalAmount: { type: Number, required: true },
     // discountsAvailable:[String],
     // discountApplied: [String],
@@ -24,7 +32,7 @@ const OrderSchema = new Schema(
     status: {
       type: String,
       enum: ORDER_DELIVERY_STATUS,
-      default: ORDER_DELIVERY_STATUS[0],
+      default: ORDER_DELIVERY_STATUS[1],
     },
   },
   { timestamps: true }
