@@ -1,5 +1,5 @@
 import { ORDER_DELIVERY_STATUS } from "../lib/constants.js";
-import { throwNewError } from "../lib/core";
+import { throwNewError } from "../lib/core.js";
 import PizzaOptions from "../model/options.model.js";
 import Order from "../model/orderHistory.model.js";
 import UserProfile from "../model/user.profile.model.js";
