@@ -4,6 +4,7 @@ import { throwNewError } from "../lib/core.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { JWT_EXPIRATION, JWT_SECRET } from "../config/env.js";
+import UserProfile from "../model/user.profile.model.js";
 
 export const registerNewUser = async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -54,19 +55,31 @@ export const loginUser = async (req, res, next) => {
       );
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
-
     if (!isPasswordValid)
       throwNewError("Incorrect password. Please try again", 400);
-
     const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
       expiresIn: JWT_EXPIRATION,
     });
+
+    let userResponse = {
+      _id: user._id,
+      profileId: user.profile,
+      email: user.email,
+    };
+
+    let profileData = await UserProfile.findById(user.profile);
+    if (profileData) userResponse.name = profileData?.name;
+    else {
+      userResponse.profileId = null;
+      userResponse.profile = null;
+    }
+
     res.status(201).json({
       success: true,
       message: "User logged in successfully",
       data: {
         token: token,
-        user: user,
+        user: userResponse,
       },
     });
   } catch (error) {
